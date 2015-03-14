@@ -1,0 +1,117 @@
+const int button1Pin = 2;      // sensor 1 pin for lug 1
+const int button2Pin = 3;      // sensor 2 pin for lug 2
+const int relay1Pin = 4;       // relay 1 pin for lug 1
+const int relay2Pin = 5;       // relay 2 pin for lug 2
+const int solidStatePin = 6;   // solid state relay for magnet
+
+int button1PushCounter = 0;   // counter for the number of button presses lug 1
+int button1State = 0;         // current state of sensor 1
+int lastButton1State = 0;     // previous state of sensor 1
+int button2PushCounter = 0;   // counter for the number of button presses lug 2
+int button2State = 0;         // current state of sensor 2
+int lastButton2State = 0;     // previous state of sensor 2
+int relay1State = 0;          // current state of relay 1
+int relay2State = 0;          // current state of relay 2
+
+void setup() {
+  // initialize the button pin as a input:
+  pinMode(button1Pin, INPUT);
+  // initialize serial communication:
+  Serial.begin(9600);
+  // Set up the relay pin to be an output:
+  pinMode(relay1Pin, OUTPUT);  // set pin as an output 
+  
+  // initialize the button pin as a input:
+  pinMode(button2Pin, INPUT);
+  // initialize serial communication:
+  Serial.begin(9600);
+  // Set up the relay pin to be an output:
+  pinMode(relay2Pin, OUTPUT);  // set pin as an output     
+  // Set up solid state pin to be an output:
+  
+  pinMode(solidStatePin, OUTPUT);  // set pin as an output     
+}
+
+void loop() {
+  // read the pushbutton input pin:
+  button1State = digitalRead(button1Pin);
+
+  // compare the buttonState to its previous state
+  if (button1State != lastButton1State) 
+  {
+    // if the state has changed, increment the counter
+    if (button1State == HIGH) {
+      // if the current state is HIGH then the button
+      // wend from off to on:
+      button1PushCounter++;
+      Serial.println("on");
+      Serial.print("number of button pushes:  ");
+      Serial.println(button1PushCounter);
+    } 
+    else {
+      // if the current state is LOW then the button
+      // wend from on to off:
+      Serial.println("off"); 
+    }
+  }
+  // save the current state as the last state, 
+  //for next time through the loop
+  lastButton1State = button1State;
+
+  // turns on the relay every two button pushes by 
+  // checking the modulo of the button push counter.
+  // the modulo function gives you the remainder of 
+  // the division of two numbers:
+  if (button1PushCounter % 2 == 0) {
+   digitalWrite(relay1Pin, HIGH);  // turn the relay on
+  } else {
+   digitalWrite(relay1Pin, LOW);   // turn the relay off
+  }
+  
+  // read the pushbutton input pin:
+  button2State = digitalRead(button2Pin);
+
+  // compare the buttonState to its previous state
+  if (button2State != lastButton2State) 
+  {
+    // if the state has changed, increment the counter
+    if (button2State == HIGH) {
+      // if the current state is HIGH then the button
+      // wend from off to on:
+      button2PushCounter++;
+      Serial.println("on");
+      Serial.print("number of button pushes:  ");
+      Serial.println(button2PushCounter);
+    } 
+    else {
+      // if the current state is LOW then the button
+      // wend from on to off:
+      Serial.println("off"); 
+    }
+  }
+  // save the current state as the last state, 
+  //for next time through the loop
+  lastButton2State = button2State;
+  
+  // turns on the relay every two button pushes by 
+  // checking the modulo of the button push counter.
+  // the modulo function gives you the remainder of 
+  // the division of two numbers:
+  if (button2PushCounter % 2 == 0) {
+   digitalWrite(relay2Pin, HIGH);  // turn the relay on
+  } else {
+   digitalWrite(relay2Pin, LOW);   // turn the relay off
+  }
+  
+    relay1State = digitalRead(relay1Pin);
+    relay2State = digitalRead(relay2Pin);
+    if ((relay1State == HIGH) && (relay2State == HIGH)) // pushing button 1 AND button 2
+                                                        // then...
+  {
+    digitalWrite(solidStatePin, LOW);  // turn the LED on
+  }
+  else
+  {
+    digitalWrite(solidStatePin, HIGH);  // turn the LED off
+  }
+}
